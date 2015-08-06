@@ -16,6 +16,7 @@ class wwd9d(BaseNegotiator):
         self.mastermind_probabilities = []
         self.their_previous_offer_utility = 0
         self.current_guess = []
+        self.optimal_solution_guess = []
 
         # temp testing
         print "pref in init is ", self.preferences
