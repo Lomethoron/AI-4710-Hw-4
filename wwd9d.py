@@ -28,8 +28,8 @@ class wwd9d(BaseNegotiator):
             self.is_first = True
 
         # accept offer
-        print self.offer
-        print self.preferences
+        print "Incoming offer ", self.offer
+        print "Our best ordering ", self.preferences
 
         # if it is our best, take it
         if self.compare(self.preferences, self.offer):
@@ -51,7 +51,7 @@ class wwd9d(BaseNegotiator):
 
         # last turn acceptance, just in case
         if self.iter_limit == self.turn_counter:
-            print "last turn acceptance"
+            print "last turn acceptance\n"
             if self.their_last_offer_utility > -len(offer):
                 # take the last offer
                 self.offer = offer
@@ -76,8 +76,8 @@ class wwd9d(BaseNegotiator):
 
     def compare(self, list_a, list_b):
         is_same = True
-        print len(list_b)
-        print len(list_a)
+        #print len(list_b)
+        #print len(list_a)
         if len(list_b) == len(list_a):
             for elem_a in list_a:
                 for elem_b in list_b:
