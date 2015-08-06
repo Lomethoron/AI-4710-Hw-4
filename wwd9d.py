@@ -19,9 +19,6 @@ class wwd9d(BaseNegotiator):
         self.optimal_solution_guess = []
 
         # temp testing
-        print "pref in init is ", self.preferences
-        self.offer = list(reversed(self.preferences))
-        print "Wrongest order nets us ", self.utility()
 
     def make_offer(self, offer):
         print "\nOur Negotiator:"
@@ -67,7 +64,6 @@ class wwd9d(BaseNegotiator):
         prob_weight = 1.0/self.turn_counter
 
 
-        print "prob weight ", prob_weight
         # if the opponenets utility goes up, weight that ordering higher
         if is_new_deal_better_for_opponent and self.turn_counter > 1:
             prob_weight *= (self.turn_counter/(self.turn_counter-1.0))
@@ -77,15 +73,58 @@ class wwd9d(BaseNegotiator):
         # update the probs
         if not self.is_first or self.turn_counter>1 :
             temp_position = 0
+            temp_max_value = ""
             for position in self.mastermind_probabilities:
+                # update prob
                 key_to_be_edited = position.get(offer[temp_position])
                 key_to_be_edited += prob_weight
-                print "old position ", position
                 position[offer[temp_position]] = key_to_be_edited
-                print "new position ", position
+
+                # store prob
+
                 temp_position += 1
 
-            print "mastermind probabilities updated ", self.mastermind_probabilities
+            # print "mastermind probabilities updated ", self.mastermind_probabilities
+
+            # build best guess
+            self.current_guess = []
+            for position in self.mastermind_probabilities:
+                choice = ""
+                prob = 0
+                for value in iter(position):
+                    if value not in self.current_guess and prob < position.get(value):
+                        choice = value
+                        prob = position.get(value)
+                self.current_guess.append(choice)
+
+        # build optimal solution
+        self.optimal_solution_guess = []
+        temp_position = 0
+        print "preferences ", self.preferences
+        print "current guess ", self.current_guess
+        print "zip ", zip(self.preferences, self.current_guess)
+        for our_ordering, their_ordering in zip(self.preferences, self.current_guess):
+            our_distance = abs(self.preferences.index(their_ordering) - temp_position)
+            their_distance = abs(self.current_guess.index(our_ordering) - temp_position)
+            print "our distance ", our_distance, " their distance ", their_distance
+            # if they are the same
+            if our_ordering == their_ordering and our_ordering not in self.optimal_solution_guess:
+                self.optimal_solution_guess.append(our_ordering)
+            # our distance > their distance
+            elif our_distance>their_distance and our_ordering not in self.optimal_solution_guess:
+                self.optimal_solution_guess.append(our_ordering)
+            # their distance > our distance
+            elif their_distance>our_distance and their_ordering not in self.optimal_solution_guess:
+                self.optimal_solution_guess.append(their_ordering)
+            # their distance == our distance
+            elif their_ordering not in self.optimal_solution_guess:
+                self.optimal_solution_guess.append(their_ordering)
+            else:
+                self.optimal_solution_guess.append(our_ordering)
+            temp_position +=1
+
+        print "best optimal guess ", self.optimal_solution_guess
+
 
 
 
