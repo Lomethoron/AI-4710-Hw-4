@@ -7,23 +7,25 @@ class wwd9d(BaseNegotiator):
     def __init__(self):
         BaseNegotiator.__init__(self)
         self.turn_counter = 0
-        self.curr_utility = 0
+        self.their_last_offer_utility = 0
         self.results = 0
         self.is_first = False
 
-
     def make_offer(self, offer):
-        print "using overloaded method"
+        print "\nOur Negotiator"
+        # temp to make sure we are offering something
+        self.offer = self.preferences
+        print "We recieve exactly ", self.utility(), " for our best offer"
         # is it not the first turn
         if offer:
             # calculate a bunch of things
             self.turn_counter += 1
+            self.offer = offer
+            print "We recieve exactly ", self.utility(), " for their offer"
+        # is it the first
         else:
             self.turn_counter = 1
             self.is_first = True
-
-        # is it the first
-
 
         # accept offer
         print self.offer
@@ -33,41 +35,41 @@ class wwd9d(BaseNegotiator):
         if self.compare(self.preferences, self.offer):
             print "best offer"
             self.offer = offer
-            return
+            return self.offer
 
         # last turn price protection
         # we expect that on the last turn the opponent will attempt to send a bad deal
         # this attempts to dodge that, accepting a slight penalty to avoid this
-        if (self.iter_limit-1) == self.turn_counter and self.is_first:
+        if (self.iter_limit-1) == self.turn_counter and not self.is_first:
             print "last turn dodge"
-            #make sure offer is worthwhile for us
-            #penalty is - the length of the ordering
-            if self.utility > -len(offer):
-                #take the last offer
+            # make sure offer is worthwhile for us
+            # penalty is - the length of the ordering
+            if self.their_last_offer_utility > -len(offer):
+                # take the last offer
                 self.offer = offer
-                return
+                return self.offer
 
         # last turn acceptance, just in case
         if self.iter_limit == self.turn_counter:
             print "last turn acceptance"
-            print "len offer"+  len(offer)
-            if self.utility > -len(offer):
-                #take the last offer
+            if self.their_last_offer_utility > -len(offer):
+                # take the last offer
                 self.offer = offer
-                return
-        #temp last turn acceptance
+                return self.offer
+        # temp last turn acceptance
         if self.iter_limit == self.turn_counter:
             print "edge case hit"
             self.offer = offer
-            return
+            return self.offer
 
         # general acceptance
+        # figure out if deal is worth it to accept
 
         # reject offer
-
+        # how to form a good counter-offer
 
     def receive_utility(self, curr_utility):
-        self.curr_utility = curr_utility
+        self.their_last_offer_utility = curr_utility
 
     def receive_results(self, results):
         self.results = results
@@ -85,12 +87,11 @@ class wwd9d(BaseNegotiator):
             is_same = False
         return is_same
 
-        #  if random() < 0.05 and offer:
-        # # Very important - we save the offer we're going to return as self.offer
-        #    self.offer = offer[:]
-        #   return offer
-        # else:
-        #   ordering = self.preferences[:]
-        #  shuffle(ordering)
-        # self.offer = ordering[:]
-        # return self.offer
+    # swaps offer with a new offer value to test its value, returns it after value is found
+    def get_curr_util(self, new_ordering):
+        temp = self.offer
+        self.offer = new_ordering
+        now_util = self.utility()
+        self.offer = temp
+        return now_util
+
