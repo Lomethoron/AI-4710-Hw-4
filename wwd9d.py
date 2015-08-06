@@ -12,7 +12,7 @@ class wwd9d(BaseNegotiator):
         self.is_first = False
 
     def make_offer(self, offer):
-        print "\nOur Negotiator"
+        print "\nOur Negotiator:"
         # temp to make sure we are offering something
         self.offer = self.preferences
         print "We recieve exactly ", self.utility(), " for our best offer"
