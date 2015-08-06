@@ -14,6 +14,8 @@ class wwd9d(BaseNegotiator):
         self.turn_model_becomes_accurate = self.iter_limit*.20
         # container of probabilities
         self.mastermind_probabilities = []
+        self.their_previous_offer_utility = 0
+        self.current_guess = []
 
         # temp testing
         print "pref in init is ", self.preferences
@@ -50,8 +52,37 @@ class wwd9d(BaseNegotiator):
                     tempMap[type] = 0
                     times_looped += 1
                 self.mastermind_probabilities.append(tempMap)
-                print "times looped ", times_looped
-        #print "mastermind probabilities initialized ", self.mastermind_probabilities
+        # print "mastermind probabilities initialized ", self.mastermind_probabilities
+
+        # take incoming offer and update probabilities
+        is_new_deal_better_for_opponent = True
+        if self.their_last_offer_utility < self.their_previous_offer_utility:
+            is_new_deal_better_for_opponent = False
+
+        # update the previous offer utility for next turn
+        self.their_previous_offer_utility = self.their_last_offer_utility
+
+        # set up weight for updating the prob
+        prob_weight = (1/self.turn_counter)
+
+        # if the opponenets utility goes up, weight that ordering higher
+        if is_new_deal_better_for_opponent and self.turn_counter > 1:
+            prob_weight *= (self.turn_counter/(self.turn_counter-1))
+        else:
+            prob_weight = 1
+
+        """
+        # update the probs
+        temp_position = 0
+        for position in self.mastermind_probabilities:
+            key_to_be_edited = position.get(offer[temp_position])
+            key_to_be_edited += prob_weight
+            position[offer[temp_position]] = key_to_be_edited
+            temp_position += 1
+
+        print "mastermind probabilities updated ", self.mastermind_probabilities
+        """
+
 
 
         # accept offer
