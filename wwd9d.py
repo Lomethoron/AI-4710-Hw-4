@@ -10,22 +10,49 @@ class wwd9d(BaseNegotiator):
         self.their_last_offer_utility = 0
         self.results = 0
         self.is_first = False
+        # time at which we think we have a reasonable grasp on their offer
+        self.turn_model_becomes_accurate = self.iter_limit*.20
+        # container of probabilities
+        self.mastermind_probabilities = []
+
+        # temp testing
+        print "pref in init is ", self.preferences
+        self.offer = list(reversed(self.preferences))
+        print "Wrongest order nets us ", self.utility()
 
     def make_offer(self, offer):
         print "\nOur Negotiator:"
+
+        # temp testing
+        print "pref in init is ", self.preferences
+        self.offer = list(reversed(self.preferences))
+        print "Wrongest order nets us ", self.utility()
         # temp to make sure we are offering something
         self.offer = self.preferences
         print "We recieve exactly ", self.utility(), " for our best offer"
+        # turn counter
         # is it not the first turn
         if offer:
-            # calculate a bunch of things
             self.turn_counter += 1
             self.offer = offer
             print "We recieve exactly ", self.utility(), " for their offer"
-        # is it the first
+        # if it is the first turn
         else:
             self.turn_counter = 1
             self.is_first = True
+
+        # init probability holder
+        if self.turn_counter == 1:
+            for position in self.preferences:
+                tempMap = dict()
+                times_looped = 0
+                for type in self.preferences:
+                    tempMap[type] = 0
+                    times_looped += 1
+                self.mastermind_probabilities.append(tempMap)
+                print "times looped ", times_looped
+        #print "mastermind probabilities initialized ", self.mastermind_probabilities
+
 
         # accept offer
         print "Incoming offer ", self.offer
@@ -35,6 +62,7 @@ class wwd9d(BaseNegotiator):
         if self.compare(self.preferences, self.offer):
             print "best offer"
             self.offer = offer
+            self.turn_counter = 0
             return self.offer
 
         # last turn price protection
@@ -47,6 +75,7 @@ class wwd9d(BaseNegotiator):
             if self.their_last_offer_utility > -len(offer):
                 # take the last offer
                 self.offer = offer
+                self.turn_counter = 0
                 return self.offer
 
         # last turn acceptance, just in case
@@ -55,11 +84,13 @@ class wwd9d(BaseNegotiator):
             if self.their_last_offer_utility > -len(offer):
                 # take the last offer
                 self.offer = offer
+                self.turn_counter = 0
                 return self.offer
         # temp last turn acceptance
         if self.iter_limit == self.turn_counter:
             print "edge case hit"
             self.offer = offer
+            self.turn_counter = 0
             return self.offer
 
         # general acceptance

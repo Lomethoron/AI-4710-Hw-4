@@ -61,7 +61,7 @@ def negotiate(num_iterations, negotiator_a, negotiator_b):
 
 if __name__ == "__main__":
     # We can't run without at least one scenario. We can, however, run with multiple provided scenarios
-    print argv
+    #print argv
     if len(argv) < 2:
         print("Please provide at least one scenario file, in csv format.")
         exit(-42)
