@@ -50,7 +50,7 @@ class wwd9d(BaseNegotiator):
                 tempMap = dict()
                 times_looped = 0
                 for type in self.preferences:
-                    tempMap[type] = 0
+                    tempMap[type] = 0.0
                     times_looped += 1
                 self.mastermind_probabilities.append(tempMap)
         # print "mastermind probabilities initialized ", self.mastermind_probabilities
@@ -64,25 +64,28 @@ class wwd9d(BaseNegotiator):
         self.their_previous_offer_utility = self.their_last_offer_utility
 
         # set up weight for updating the prob
-        prob_weight = (1/self.turn_counter)
+        prob_weight = 1.0/self.turn_counter
 
+
+        print "prob weight ", prob_weight
         # if the opponenets utility goes up, weight that ordering higher
         if is_new_deal_better_for_opponent and self.turn_counter > 1:
-            prob_weight *= (self.turn_counter/(self.turn_counter-1))
+            prob_weight *= (self.turn_counter/(self.turn_counter-1.0))
         else:
-            prob_weight = 1
+            prob_weight = 1.0
 
-        """
         # update the probs
-        temp_position = 0
-        for position in self.mastermind_probabilities:
-            key_to_be_edited = position.get(offer[temp_position])
-            key_to_be_edited += prob_weight
-            position[offer[temp_position]] = key_to_be_edited
-            temp_position += 1
+        if not self.is_first or self.turn_counter>1 :
+            temp_position = 0
+            for position in self.mastermind_probabilities:
+                key_to_be_edited = position.get(offer[temp_position])
+                key_to_be_edited += prob_weight
+                print "old position ", position
+                position[offer[temp_position]] = key_to_be_edited
+                print "new position ", position
+                temp_position += 1
 
-        print "mastermind probabilities updated ", self.mastermind_probabilities
-        """
+            print "mastermind probabilities updated ", self.mastermind_probabilities
 
 
 
