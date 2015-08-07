@@ -100,6 +100,22 @@ class wwd9d(BaseNegotiator):
         # build optimal solution
         self.optimal_solution_guess = []
         temp_position = 0
+        for their_ordering in self.current_guess:
+            if (temp_position%2) == 0 and their_ordering not in self.optimal_solution_guess:
+                self.optimal_solution_guess.append(their_ordering)
+            else:
+                for our_ordering in self.preferences:
+                    if(our_ordering not in self.optimal_solution_guess):
+                        self.optimal_solution_guess.append(our_ordering)
+                        break
+            temp_position += 1
+        print "optimal solution ", self.optimal_solution_guess
+
+
+
+
+        """
+        temp_position = 0
         print "preferences ", self.preferences
         print "current guess ", self.current_guess
         print "zip ", zip(self.preferences, self.current_guess)
@@ -124,6 +140,7 @@ class wwd9d(BaseNegotiator):
             temp_position +=1
 
         print "best optimal guess ", self.optimal_solution_guess
+       """
 
 
 
