@@ -102,49 +102,22 @@ class wwd9d(BaseNegotiator):
         self.optimal_solution_guess = []
         temp_position = 0
         for their_ordering in self.current_guess:
-            if (temp_position%2) == 0 and their_ordering not in self.optimal_solution_guess:
+            if (temp_position%2) == 0:
                 self.optimal_solution_guess.append(their_ordering)
             else:
+                self.optimal_solution_guess.append("")
+            temp_position += 1
+
+        temp_position = 0
+        for optimal_ordering in self.optimal_solution_guess:
+            if((temp_position%2) != 0):
                 for our_ordering in self.preferences:
-                    if(our_ordering not in self.optimal_solution_guess):
-                        self.optimal_solution_guess.append(our_ordering)
+                    if our_ordering not in self.optimal_solution_guess:
+                        self.optimal_solution_guess[self.optimal_solution_guess.index("")] = our_ordering
                         break
             temp_position += 1
         print "optimal solution ", self.optimal_solution_guess
-
-
-
-
-        """
-        temp_position = 0
-        print "preferences ", self.preferences
-        print "current guess ", self.current_guess
-        print "zip ", zip(self.preferences, self.current_guess)
-        for our_ordering, their_ordering in zip(self.preferences, self.current_guess):
-            our_distance = abs(self.preferences.index(their_ordering) - temp_position)
-            their_distance = abs(self.current_guess.index(our_ordering) - temp_position)
-            print "our distance ", our_distance, " their distance ", their_distance
-            # if they are the same
-            if our_ordering == their_ordering and our_ordering not in self.optimal_solution_guess:
-                self.optimal_solution_guess.append(our_ordering)
-            # our distance > their distance
-            elif our_distance>their_distance and our_ordering not in self.optimal_solution_guess:
-                self.optimal_solution_guess.append(our_ordering)
-            # their distance > our distance
-            elif their_distance>our_distance and their_ordering not in self.optimal_solution_guess:
-                self.optimal_solution_guess.append(their_ordering)
-            # their distance == our distance
-            elif their_ordering not in self.optimal_solution_guess:
-                self.optimal_solution_guess.append(their_ordering)
-            else:
-                self.optimal_solution_guess.append(our_ordering)
-            temp_position +=1
-
-        print "best optimal guess ", self.optimal_solution_guess
-       """
-
-
-
+        print "optimal solution utility ", self.get_curr_util(self.optimal_solution_guess)
 
         # accept offer
         print "Incoming offer ", self.offer
@@ -186,7 +159,11 @@ class wwd9d(BaseNegotiator):
             return self.offer
 
         # general acceptance
-        # figure out if deal is worth it to accept
+        optimal_offer_guess_utility = self.get_curr_util(self.optimal_solution_guess)
+        preferences_utility = self.get_curr_util(self.preferences)
+        if self.their_last_offer_utility>optimal_offer_guess_utility:
+            print ""
+
 
         # reject offer
         
