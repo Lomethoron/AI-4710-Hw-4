@@ -3,7 +3,6 @@ from random import random, shuffle
 
 
 class wwd9d(BaseNegotiator):
-
     def __init__(self):
         BaseNegotiator.__init__(self)
         self.turn_counter = 0
@@ -11,7 +10,7 @@ class wwd9d(BaseNegotiator):
         self.results = 0
         self.is_first = False
         # time at which we think we have a reasonable grasp on their offer
-        self.turn_model_becomes_accurate = self.iter_limit*.20
+        self.turn_model_becomes_accurate = self.iter_limit * .20
         # container of probabilities
         self.mastermind_probabilities = []
         self.their_previous_offer_utility = 0
@@ -19,7 +18,7 @@ class wwd9d(BaseNegotiator):
         self.optimal_solution_guess = []
         self.last_guess = []
 
-        # temp testing
+    # temp testing
 
     def make_offer(self, offer):
         print "\nOur Negotiator:"
@@ -62,17 +61,17 @@ class wwd9d(BaseNegotiator):
         self.their_previous_offer_utility = self.their_last_offer_utility
 
         # set up weight for updating the prob
-        prob_weight = 1.0/self.turn_counter
+        prob_weight = 1.0 / self.turn_counter
 
 
         # if the opponenets utility goes up, weight that ordering higher
         if is_new_deal_better_for_opponent and self.turn_counter > 1:
-            prob_weight *= (self.turn_counter/(self.turn_counter-1.0))
+            prob_weight *= (self.turn_counter / (self.turn_counter - 1.0))
         else:
             prob_weight = 1.0
 
         # update the probs
-        if not self.is_first or self.turn_counter>1 :
+        if not self.is_first or self.turn_counter > 1:
             temp_position = 0
             temp_max_value = ""
             for position in self.mastermind_probabilities:
@@ -102,7 +101,7 @@ class wwd9d(BaseNegotiator):
         self.optimal_solution_guess = []
         temp_position = 0
         for their_ordering in self.current_guess:
-            if (temp_position%2) == 0:
+            if (temp_position % 2) == 0:
                 self.optimal_solution_guess.append(their_ordering)
             else:
                 self.optimal_solution_guess.append("")
@@ -110,7 +109,7 @@ class wwd9d(BaseNegotiator):
 
         temp_position = 0
         for optimal_ordering in self.optimal_solution_guess:
-            if((temp_position%2) != 0):
+            if ((temp_position % 2) != 0):
                 for our_ordering in self.preferences:
                     if our_ordering not in self.optimal_solution_guess:
                         self.optimal_solution_guess[self.optimal_solution_guess.index("")] = our_ordering
@@ -133,7 +132,7 @@ class wwd9d(BaseNegotiator):
         # last turn price protection
         # we expect that on the last turn the opponent will attempt to send a bad deal
         # this attempts to dodge that, accepting a slight penalty to avoid this
-        if (self.iter_limit-1) == self.turn_counter and not self.is_first:
+        if (self.iter_limit - 1) == self.turn_counter and not self.is_first:
             print "last turn dodge"
             # make sure offer is worthwhile for us
             # penalty is - the length of the ordering
@@ -158,41 +157,55 @@ class wwd9d(BaseNegotiator):
             self.turn_counter = 0
             return self.offer
 
-        # general acceptance
-        optimal_offer_guess_utility = self.get_curr_util(self.optimal_solution_guess)
-        preferences_utility = self.get_curr_util(self.preferences)
-        if self.their_last_offer_utility>optimal_offer_guess_utility:
-            print ""
-
-
         # reject offer
-        
-        # how to form a good counter-offer
+        a = -1
+        b = -1
+        count = 0
+        for value1, value2 in zip(self.optimal_solution_guess, self.last_guess):
+            count += 1
+            if value1 != value2:
+                if a == -1:
+                    a = count
+                else:
+                    b = count
+                    break
 
-    def receive_utility(self, curr_utility):
-        self.their_last_offer_utility = curr_utility
+        i = self.optimal_solution_guess[a]
+        self.optimal_solution_guess[a] = self.last_guess[b]
+        self.last_guess[b] = i
 
-    def receive_results(self, results):
-        self.results = results
 
-    def compare(self, list_a, list_b):
-        is_same = True
-        #print len(list_b)
-        #print len(list_a)
-        if len(list_b) == len(list_a):
-            for elem_a in list_a:
-                for elem_b in list_b:
-                    if elem_a != elem_b:
-                        is_same = False
-        else:
-            is_same = False
-        return is_same
+# reject offer
 
-    # swaps offer with a new offer value to test its value, returns it after value is found
-    def get_curr_util(self, new_ordering):
-        temp = self.offer
-        self.offer = new_ordering
-        now_util = self.utility()
-        self.offer = temp
-        return now_util
+# how to form a good counter-offer
 
+
+def receive_utility(self, curr_utility):
+    self.their_last_offer_utility = curr_utility
+
+
+def receive_results(self, results):
+    self.results = results
+
+
+def compare(self, list_a, list_b):
+    is_same = True
+    # print len(list_b)
+    # print len(list_a)
+    if len(list_b) == len(list_a):
+        for elem_a in list_a:
+            for elem_b in list_b:
+                if elem_a != elem_b:
+                    is_same = False
+    else:
+        is_same = False
+    return is_same
+
+
+# swaps offer with a new offer value to test its value, returns it after value is found
+def get_curr_util(self, new_ordering):
+    temp = self.offer
+    self.offer = new_ordering
+    now_util = self.utility()
+    self.offer = temp
+    return now_util
