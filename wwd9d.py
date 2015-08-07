@@ -187,6 +187,20 @@ class wwd9d(BaseNegotiator):
 
         # general acceptance
         # figure out if deal is worth it to accept
+        a = -1
+        b = -1
+        count = 0
+        for value1, value2 in zip(optimal_solution_guess, last_guess):
+			        count += 1
+			        if value1 != value2:
+				        if a == -1:
+					        a = count
+				        else:
+				        	b = count
+					        break
+        i = optimal_solution_guess[a]
+        optimal_solution_guess[a] = last_guess[b]
+        last_guess[b] = i
 
         # reject offer
         
