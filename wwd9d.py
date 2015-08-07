@@ -17,6 +17,7 @@ class wwd9d(BaseNegotiator):
         self.their_previous_offer_utility = 0
         self.current_guess = []
         self.optimal_solution_guess = []
+        self.last_guess = []
 
         # temp testing
 
@@ -171,6 +172,7 @@ class wwd9d(BaseNegotiator):
         # figure out if deal is worth it to accept
 
         # reject offer
+        
         # how to form a good counter-offer
 
     def receive_utility(self, curr_utility):
